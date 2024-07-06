@@ -1,0 +1,20 @@
+{
+  "name": "electron-app",
+  "version": "1.0.0",
+  "description": "chess opening app",
+  "main": "main.js",
+  "scripts": {
+    "test": "test",
+    "start": "electron .",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "author": "Will Barnard",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.2"
+  },
+  "devDependencies": {
+    "electron": "^31.1.0"
+  }
+}
