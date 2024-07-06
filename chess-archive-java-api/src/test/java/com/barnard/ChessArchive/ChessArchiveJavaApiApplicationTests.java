@@ -1,4 +1,4 @@
-package com.barnard.chess_archive_java_api;
+package com.barnard.ChessArchive;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

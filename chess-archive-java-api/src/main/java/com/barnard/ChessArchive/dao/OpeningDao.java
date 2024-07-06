@@ -1,8 +1,6 @@
-package com.barnard.chess_archive_java_api.dao;
+package com.barnard.ChessArchive.dao;
 
-import com.barnard.chess_archive_java_api.model.Opening;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import com.barnard.ChessArchive.model.Opening;
 
 import java.util.List;
 

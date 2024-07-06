@@ -1,4 +1,4 @@
-package com.barnard.chess_archive_java_api.model;
+package com.barnard.ChessArchive.model;
 
 public class OpeningCategory {
 

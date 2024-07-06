@@ -1,4 +1,4 @@
-package com.barnard.chess_archive_java_api.exception;
+package com.barnard.ChessArchive.exception;
 
 public class DaoException extends RuntimeException {
     public DaoException() {
