@@ -10,7 +10,7 @@
     "postuninstall": "electron-builder install-app-deps",
     "test": "test"
   },
-  "main": "main.js",
+  "main": "src/background.js",
   "dependencies": {},
   "devDependencies": {
     "electron": "^13.0.0",

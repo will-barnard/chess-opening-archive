@@ -24,7 +24,7 @@ public class JdbcOpeningDao implements OpeningDao {
     @Override
     public Opening getOpening(int openingId) {
         Opening opening = null;
-        String sql = "SELECT opening_id, opening.opening_id, opening.source_id, source_page, source_subnumber, pgn, notes, opening_category.category_name, source_material.source_name " +
+        String sql = "SELECT opening_id, opening.opening_id, opening.category_id, opening.source_id, source_page, source_subnumber, pgn, notes, opening_category.category_name, source_material.source_name " +
                 "FROM opening " +
                 "JOIN opening_category on opening.category_id = opening_category.category_id " +
                 "JOIN source_material on opening.source_id = source_material.source_id " +
@@ -46,7 +46,7 @@ public class JdbcOpeningDao implements OpeningDao {
     @Override
     public List<Opening> getAllOpenings() {
         List<Opening> openings = new ArrayList<>();
-        String sql = "SELECT opening_id, opening.opening_id, opening.source_id, source_page, source_subnumber, pgn, notes, opening_category.category_name, source_material.source_name " +
+        String sql = "SELECT opening_id, opening.opening_id, opening.category_id, opening.source_id, source_page, source_subnumber, pgn, notes, opening_category.category_name, source_material.source_name " +
                 "FROM opening " +
                 "JOIN opening_category on opening.category_id = opening_category.category_id " +
                 "JOIN source_material on opening.source_id = source_material.source_id;";
@@ -64,23 +64,62 @@ public class JdbcOpeningDao implements OpeningDao {
     }
 
     @Override
-    public List<Opening> searchLikeOpeningName(String search) {
-        // todo
+    public List<Opening> getOpeningsByCategory(int categoryId) {
+        List<Opening> openingList = new ArrayList<>();
+        String sql = "SELECT opening_id, opening.opening_id, opening.category_id, opening.source_id, source_page, source_subnumber, pgn, notes, opening_category.category_name, source_material.source_name " +
+                "FROM opening " +
+                "JOIN opening_category on opening.category_id = opening_category.category_id " +
+                "JOIN source_material on opening.source_id = source_material.source_id " +
+                "WHERE opening.category_id = ?;";
         try {
-
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, categoryId);
+            if (rowSet.next()) {
+                openingList.add(mapRowToOpening(rowSet));
+            }
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
         } catch (DataIntegrityViolationException e) {
             throw new DaoException("Data integrity violation", e);
         }
-        return null;
+        return openingList;
+    }
+
+    @Override
+    public List<Opening> searchLikeOpeningName(String search) {
+        List<Opening> openings = new ArrayList<>();
+        search = "%" + search + "%";
+        String sql = "SELECT opening_id, opening.opening_id, opening.category_id, opening.source_id, source_page, source_subnumber, pgn, notes, opening_category.category_name, source_material.source_name " +
+                "FROM opening " +
+                "JOIN opening_category on opening.category_id = opening_category.category_id " +
+                "JOIN source_material on opening.source_id = source_material.source_id " +
+                "WHERE opening_category.category_name LIKE ?;";
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, search);
+            while (rowSet.next()) {
+                openings.add(mapRowToOpening(rowSet));
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
+        }
+        return openings;
     }
 
     @Override
     public List<Opening> searchLikeOpeningPgn(String pgn) {
-        // todo
+        List<Opening> openings = new ArrayList<>();
+        pgn = "%" + pgn + "%";
+        String sql = "SELECT opening_id, opening.opening_id, opening.source_id, source_page, source_subnumber, pgn, notes, opening_category.category_name, source_material.source_name " +
+                "FROM opening " +
+                "JOIN opening_category on opening.category_id = opening_category.category_id " +
+                "JOIN source_material on opening.source_id = source_material.source_id " +
+                "WHERE opening_category.category_name LIKE ?;";
         try {
-
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, pgn);
+            while (rowSet.next()) {
+                openings.add(mapRowToOpening(rowSet));
+            }
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
         } catch (DataIntegrityViolationException e) {
@@ -93,7 +132,8 @@ public class JdbcOpeningDao implements OpeningDao {
     public Opening createOpening(Opening opening) {
         Opening newOpening;
         String sql = "INSERT INTO opening (category_id, source_id, source_page, source_subnumber, pgn, notes) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?) " +
+                "RETURNING opening_id;";
         try {
             int openingId = jdbcTemplate.queryForObject(sql, int.class, opening.getOpeningCategory().getCategoryId(), opening.getSource().getSourceId(),
                     opening.getSource().getSourcePage(), opening.getSource().getSubnumber(), opening.getPgn(), opening.getNotes());
