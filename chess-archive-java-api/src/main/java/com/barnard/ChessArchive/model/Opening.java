@@ -1,9 +1,11 @@
 package com.barnard.ChessArchive.model;
 
+import java.util.List;
+
 public class Opening {
 
     private int openingId;
-    private OpeningCategory openingCategory;
+    private List<OpeningCategory> categories;
     private Source source;
     private String pgn;
     private String notes;
@@ -14,14 +16,6 @@ public class Opening {
 
     public void setOpeningId(int openingId) {
         this.openingId = openingId;
-    }
-
-    public OpeningCategory getOpeningCategory() {
-        return openingCategory;
-    }
-
-    public void setOpeningCategory(OpeningCategory openingCategory) {
-        this.openingCategory = openingCategory;
     }
 
     public Source getSource() {
@@ -46,5 +40,13 @@ public class Opening {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public List<OpeningCategory> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<OpeningCategory> categories) {
+        this.categories = categories;
     }
 }

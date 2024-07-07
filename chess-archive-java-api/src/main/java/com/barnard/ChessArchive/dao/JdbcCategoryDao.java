@@ -18,7 +18,7 @@ public class JdbcCategoryDao implements CategoryDao {
     @Override
     public OpeningCategory getCategory(int categoryId) {
         OpeningCategory category = new OpeningCategory();
-        String sql = "SELECT * FROM opening_category " +
+        String sql = "SELECT * FROM category " +
                 "WHERE category_id = ?;";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, categoryId);
@@ -37,7 +37,7 @@ public class JdbcCategoryDao implements CategoryDao {
     @Override
     public OpeningCategory createCategory(OpeningCategory category) {
         OpeningCategory newCategory = null;
-        String sql = "INSERT INTO opening_category (category_name) " +
+        String sql = "INSERT INTO category (category_name) " +
                 "VALUES (?) " +
                 "RETURNING category_id;";
         try {
@@ -54,7 +54,7 @@ public class JdbcCategoryDao implements CategoryDao {
     @Override
     public OpeningCategory updateCategory(OpeningCategory category) {
         OpeningCategory newCategory = null;
-        String sql = "UPDATE opening_category " +
+        String sql = "UPDATE category " +
                 "SET category_name = ? " +
                 "WHERE category_id = ?";
         try {
@@ -69,11 +69,40 @@ public class JdbcCategoryDao implements CategoryDao {
     }
 
     @Override
+    public void addCategoryToOpening(int categoryId, int openingId) {
+        String sql = "INSERT INTO opening_category (category_id, opening_id) " +
+                "VALUES (?, ?);";
+        try {
+            jdbcTemplate.update(sql, categoryId, openingId);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
+        }
+    }
+
+    @Override
+    public void removeCategoryFromOpening(int categoryId, int openingId) {
+        String sql = "DELETE FROM opening_category " +
+                "WHERE category_id = ? " +
+                "AND opening_id = ?;";
+        try {
+            jdbcTemplate.update(sql, categoryId, openingId);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
+        }
+    }
+
+    @Override
     public void deleteCategory(int categoryId) {
         String sql = "DELETE FROM opening_category " +
+                "WHERE category_id = ?; " +
+                "DELETE FROM category " +
                 "WHERE category_id = ?;";
         try {
-            int rowsAffected = jdbcTemplate.update(sql, categoryId);
+            int rowsAffected = jdbcTemplate.update(sql, categoryId, categoryId);
             if (rowsAffected == 0) {
                 throw new DaoException("no rows affected");
             }

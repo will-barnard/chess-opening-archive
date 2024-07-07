@@ -20,19 +20,7 @@ public class OpeningController {
 
     @GetMapping(path = "/{openingId}")
     public Opening getOpening(@PathVariable int openingId) {
-        return null;
-    }
-
-    @GetMapping(path = "/category/{categoryId}")
-    public List<Opening> getOpeningCategory(@PathVariable int categoryId) {
-        List<Opening> openingList = new ArrayList<>();
-        try {
-            openingList = openingDao.getOpeningsByCategory(categoryId);
-        } catch(Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Something went wrong");
-        }
-
-        return openingList;
+        return openingDao.getOpening(openingId);
     }
 
     @GetMapping(path = "")
@@ -46,5 +34,41 @@ public class OpeningController {
         return openingList;
     }
 
+    @GetMapping(path = "/category/{categoryId}")
+    public List<Opening> getOpeningsByCategory(@PathVariable int categoryId) {
+        List<Opening> openingList = new ArrayList<>();
+        try {
+            openingList = openingDao.getOpeningsByCategory(categoryId);
+        } catch(Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Something went wrong");
+        }
 
+        return openingList;
+    }
+
+    @GetMapping(path = "/search")
+    public List<Opening> searchName(@RequestBody String search) {
+        return openingDao.searchLikeOpeningName(search);
+    }
+
+    @GetMapping(path = "/searchPgn")
+    public List<Opening> searchPGN(@RequestBody String pgn) {
+        return openingDao.searchLikeOpeningPgn(pgn);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(path = "")
+    public Opening createOpening(@RequestBody Opening opening) {
+        return openingDao.createOpening(opening);
+    }
+
+    @PutMapping(path = "")
+    public Opening updateOpening(@RequestBody Opening opening) {
+        return openingDao.updateOpening(opening);
+    }
+
+    @DeleteMapping(path = "/{openingId}")
+    public void deleteOpening(@PathVariable int openingId) {
+        openingDao.deleteOpening(openingId);
+    }
 }
