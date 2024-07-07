@@ -1,15 +1,22 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png">
   <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <RouterView />
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
+import OpeningService from './service/OpeningService';
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
+  components: {HelloWorld},
+  created() {
+    OpeningService.getAllOpenings().then( 
+          (response) => {
+            this.$store.commit('LOAD_OPENINGS', response.data);
+
+          })
   }
 }
 </script>

@@ -10,6 +10,7 @@ CREATE TABLE source_material (
 
 CREATE TABLE opening (
 	opening_id serial PRIMARY KEY,
+	opening_name varchar(200),
 	source_id int REFERENCES source_material(source_id),
 	source_page int,
 	source_subnumber int,
