@@ -4,6 +4,9 @@ export default {
     getCategory(categoryId) {
         return axios.get('/category/' + categoryId)
     },
+    getAllCategories() {
+        return axios.get('/category')
+    },
     createCategory(category) {
         return axios.post('/category', category)
     },

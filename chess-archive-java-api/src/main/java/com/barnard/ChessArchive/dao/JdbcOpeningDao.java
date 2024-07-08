@@ -25,7 +25,7 @@ public class JdbcOpeningDao implements OpeningDao {
     public Opening getOpening(int openingId) {
         Opening opening = null;
 
-        String sql = "SELECT opening.*, category.* " +
+        String sql = "SELECT opening.*, category.*, source_material.source_name " +
                 "FROM opening " +
                 "JOIN opening_category ON opening.opening_id = opening_category.opening_id " +
                 "JOIN category ON opening_category.category_id = category.category_id " +
@@ -55,7 +55,7 @@ public class JdbcOpeningDao implements OpeningDao {
     @Override
     public List<Opening> getAllOpenings() {
         List<Opening> openings = new ArrayList<>();
-        String sql = "SELECT opening.*, category.* " +
+        String sql = "SELECT opening.*, category.*, source_material.source_name " +
                 "FROM opening " +
                 "JOIN opening_category ON opening.opening_id = opening_category.opening_id " +
                 "JOIN category ON opening_category.category_id = category.category_id " +
@@ -97,10 +97,11 @@ public class JdbcOpeningDao implements OpeningDao {
                 "JOIN opening_category on opening.category_id = opening_category.category_id " +
                 "WHERE opening_category.category_id = ?;";
 
-        String sql2 = "SELECT opening.*, category.* " +
+        String sql2 = "SELECT opening.*, category.*, source_material.source_name " +
                 "FROM opening " +
                 "JOIN opening_category on opening.category_id = opening_category.category_id " +
                 "JOIN category ON opening_category.category_id = category.category_id " +
+                "JOIN source_material ON opening.source_id = source_material.source_id" +
                 "WHERE opening_id = ";
         String joinStr = " OR opening_id = ";
         boolean firstLoop = true;
@@ -147,7 +148,7 @@ public class JdbcOpeningDao implements OpeningDao {
     public List<Opening> searchLikeOpeningName(String search) {
         List<Opening> openings = new ArrayList<>();
         search = "%" + search + "%";
-        String sql = "SELECT opening.* " +
+        String sql = "SELECT opening.*, source_material.source_name " +
                 "FROM opening " +
                 "JOIN opening_category on opening.opening_id = opening_category.opening_id " +
                 "JOIN category ON opening_category.category_id = category.category_id " +
@@ -185,7 +186,7 @@ public class JdbcOpeningDao implements OpeningDao {
     public List<Opening> searchLikeOpeningPgn(String pgn) {
         List<Opening> openings = new ArrayList<>();
         pgn = "%" + pgn + "%";
-        String sql = "SELECT opening.* " +
+        String sql = "SELECT opening.*, source_material.source_name " +
                 "FROM opening " +
                 "JOIN opening_category on opening.opening_id = opening_category.opening_id " +
                 "JOIN category ON opening_category.category_id = category.category_id " +
@@ -222,11 +223,11 @@ public class JdbcOpeningDao implements OpeningDao {
     @Override
     public Opening createOpening(Opening opening) {
         Opening newOpening;
-        String sql = "INSERT INTO opening (source_id, source_page, source_subnumber, pgn, notes) " +
+        String sql = "INSERT INTO opening (opening_name, source_id, source_page, source_subnumber, pgn, notes) " +
                 "VALUES (?, ?, ?, ?, ?) " +
                 "RETURNING opening_id;";
         try {
-            int openingId = jdbcTemplate.queryForObject(sql, int.class, opening.getSource().getSourceId(),
+            int openingId = jdbcTemplate.queryForObject(sql, int.class, opening.getOpeningName(), opening.getSource().getSourceId(),
                     opening.getSource().getSourcePage(), opening.getSource().getSubnumber(), opening.getPgn(), opening.getNotes());
             newOpening = getOpening(openingId);
         } catch (CannotGetJdbcConnectionException e) {
@@ -241,10 +242,10 @@ public class JdbcOpeningDao implements OpeningDao {
     public Opening updateOpening(Opening opening) {
         Opening updatedOpening = null;
         String sql = "UPDATE opening " +
-                "SET source_id = ?, source_page = ?, source_subnumber = ?, pgn = ?, notes = ? " +
+                "SET opening_name = ?, source_id = ?, source_page = ?, source_subnumber = ?, pgn = ?, notes = ? " +
                 "WHERE opening_id = ?;";
         try {
-            int rowsAffected = jdbcTemplate.update(sql, opening.getSource().getSourceId(),
+            int rowsAffected = jdbcTemplate.update(sql, opening.getOpeningName(), opening.getSource().getSourceId(),
                     opening.getSource().getSourcePage(), opening.getSource().getSubnumber(), opening.getPgn(), opening.getNotes(),
                     opening.getOpeningId());
             if (rowsAffected == 0) {
@@ -281,8 +282,10 @@ public class JdbcOpeningDao implements OpeningDao {
         opening.setCategories(new ArrayList<>());
 
         opening.setOpeningId(rs.getInt("opening_id"));
+        opening.setOpeningName(rs.getString("opening_name"));
         int sourceId = rs.getInt("source_id");
         source.setSourceId(sourceId);
+        source.setSourceName(rs.getString("source_name"));
         source.setSourcePage(rs.getInt("source_page"));
         source.setSubnumber(rs.getInt("source_subnumber"));
         opening.setPgn(rs.getString("pgn"));

@@ -25,7 +25,6 @@ public class OpeningController {
 
     @GetMapping(path = "")
     public List<Opening> getAllOpenings() {
-        System.out.println("Hello");
         List<Opening> openingList = new ArrayList<>();
         try {
             openingList = openingDao.getAllOpenings();

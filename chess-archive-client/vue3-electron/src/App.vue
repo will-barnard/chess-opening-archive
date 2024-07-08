@@ -1,22 +1,49 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
-  <RouterView />
+  <div>
+    <div class="heading">
+      <h1>Chess Opening Archive</h1>
+      <div class="spacer"></div>
+      <p :class="openingStatus">Openings</p>
+      <p :class="categoryStatus">Categories</p>
+      <p :class="sourceStatus">Sources</p>
+    </div>
+    <RouterView />
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-import OpeningService from './service/OpeningService';
+
 
 export default {
   name: 'App',
-  components: {HelloWorld},
+  components: {},
   created() {
-    OpeningService.getAllOpenings().then( 
-          (response) => {
-            this.$store.commit('LOAD_OPENINGS', response.data);
-
-          })
+    this.$store.commit('LOAD_OPENINGS');        
+    this.$store.commit('LOAD_CATEGORIES');
+    this.$store.commit('LOAD_SOURCES')
+  },
+  computed: {
+    openingStatus() {
+      if (this.$store.state.openings.length > 0) {
+        return "hp loaded";  
+      } else {
+        return "hp loading"
+      }
+    },
+    categoryStatus() {
+      if (this.$store.state.categories.length > 0) {
+        return "hp loaded";  
+      } else {
+        return "hp loading"
+      }
+    },
+    sourceStatus() {
+      if (this.$store.state.sources.length > 0) {
+        return "hp loaded";  
+      } else {
+        return "hp loading"
+      }
+    }
   }
 }
 </script>
@@ -27,7 +54,27 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
   margin-top: 60px;
+}
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hp {
+  padding: 10px;
+  margin-left: 5px;
+  border: 1px solid;
+  border-radius: 10px;
+}
+.loading {
+  background-color: rgb(150, 73, 73);
+}
+.loaded {
+  background-color: rgb(59, 90, 59);
+  transition: background-color 2s;
+}
+.spacer {
+  flex-grow: 1;
 }
 </style>

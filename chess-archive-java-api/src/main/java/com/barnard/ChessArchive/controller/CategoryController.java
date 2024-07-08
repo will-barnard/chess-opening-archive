@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin
 @RequestMapping(path = "/category")
@@ -17,6 +19,11 @@ public class CategoryController {
     @GetMapping(path = "/{categoryId}")
     public OpeningCategory getCategory(@PathVariable int categoryId) {
         return categoryDao.getCategory(categoryId);
+    }
+
+    @GetMapping(path = "")
+    public List<OpeningCategory> getAllCategories() {
+        return categoryDao.getAllCategories();
     }
 
     @ResponseStatus(HttpStatus.CREATED)

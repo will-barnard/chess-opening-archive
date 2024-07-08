@@ -5,7 +5,6 @@ import router from './router'
 import axios from 'axios';
 
 axios.defaults.baseURL = process.env.VUE_APP_API_PATH;
-console.log(process.env.VUE_APP_API_PATH)
 const store = createStore();
 
 

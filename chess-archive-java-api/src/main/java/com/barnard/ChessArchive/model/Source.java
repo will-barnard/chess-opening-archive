@@ -7,6 +7,14 @@ public class Source {
     private int sourcePage;
     private int subnumber;
 
+    public Source() {
+    }
+
+    public Source(int sourceId, String sourceName) {
+        this.sourceId = sourceId;
+        this.sourceName = sourceName;
+    }
+
     public int getSourceId() {
         return sourceId;
     }

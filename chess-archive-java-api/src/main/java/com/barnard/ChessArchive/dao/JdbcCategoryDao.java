@@ -9,6 +9,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class JdbcCategoryDao implements CategoryDao {
 
@@ -32,6 +35,23 @@ public class JdbcCategoryDao implements CategoryDao {
             throw new DaoException("Data integrity violation", e);
         }
         return category;
+    }
+
+    @Override
+    public List<OpeningCategory> getAllCategories() {
+        List<OpeningCategory> categories = new ArrayList<>();
+        String sql = "SELECT * FROM category";
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
+            while (rowSet.next()) {
+                categories.add(new OpeningCategory(rowSet.getInt("category_id"), rowSet.getString("category_name")));
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
+        }
+        return categories;
     }
 
     @Override

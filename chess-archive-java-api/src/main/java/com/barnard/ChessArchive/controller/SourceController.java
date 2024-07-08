@@ -5,6 +5,8 @@ import com.barnard.ChessArchive.model.Source;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin
 @RequestMapping(path = "/source")
@@ -16,6 +18,11 @@ public class SourceController {
     @GetMapping(path = "/{sourceId}")
     public Source getSource(@PathVariable int sourceId) {
         return sourceDao.getSource(sourceId);
+    }
+
+    @GetMapping(path = "")
+    public List<Source> getAllSources() {
+        return sourceDao.getAllSources();
     }
 
     @PostMapping(path = "")

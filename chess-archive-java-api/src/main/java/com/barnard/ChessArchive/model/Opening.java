@@ -5,7 +5,7 @@ import java.util.List;
 public class Opening {
 
     private int openingId;
-    private String opening_name;
+    private String openingName;
     private List<OpeningCategory> categories;
     private Source source;
     private String pgn;
@@ -19,12 +19,12 @@ public class Opening {
         this.openingId = openingId;
     }
 
-    public String getOpening_name() {
-        return opening_name;
+    public String getOpeningName() {
+        return openingName;
     }
 
-    public void setOpening_name(String opening_name) {
-        this.opening_name = opening_name;
+    public void setOpeningName(String openingName) {
+        this.openingName = openingName;
     }
 
     public Source getSource() {

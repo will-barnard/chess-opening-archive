@@ -4,6 +4,9 @@ export default {
     getSource(sourceId) {
         return axios.get('/source/' + sourceId)
     },
+    getAllSources() {
+        return axios.get('/source')
+    },
     createSource(source) {
         return axios.post('/source', source)
     },

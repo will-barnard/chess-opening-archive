@@ -10,6 +10,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class JdbcSourceDao implements SourceDao {
 
@@ -33,6 +36,23 @@ public class JdbcSourceDao implements SourceDao {
             throw new DaoException("Data integrity violation", e);
         }
         return source;
+    }
+
+    @Override
+    public List<Source> getAllSources() {
+        List<Source> sources = new ArrayList<>();
+        String sql = "SELECT * FROM source_material";
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
+            if (rowSet.next()) {
+                sources.add(new Source(rowSet.getInt("source_id"), rowSet.getString("source_name")));
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation", e);
+        }
+        return sources;
     }
 
     @Override
