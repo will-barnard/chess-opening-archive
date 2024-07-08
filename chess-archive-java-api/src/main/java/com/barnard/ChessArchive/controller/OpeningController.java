@@ -59,7 +59,8 @@ public class OpeningController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "")
     public Opening createOpening(@RequestBody Opening opening) {
-        return openingDao.createOpening(opening);
+        Opening open = openingDao.createOpening(opening);
+        return open;
     }
 
     @PutMapping(path = "")

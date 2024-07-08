@@ -18,9 +18,9 @@ export default {
   name: 'App',
   components: {},
   created() {
-    this.$store.commit('LOAD_OPENINGS');        
     this.$store.commit('LOAD_CATEGORIES');
-    this.$store.commit('LOAD_SOURCES')
+    this.$store.commit('LOAD_SOURCES');
+    this.$store.commit('LOAD_OPENINGS');        
   },
   computed: {
     openingStatus() {

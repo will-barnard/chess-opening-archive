@@ -1,9 +1,13 @@
 <template>
     <div>
-        <div class="big-container">
+        <div class="menu">
+            <h3 @click="showCreate=true" class="hp clicker">Create Opening</h3>
+            <h3 @click="showCreate=false" class="hp clicker">Opening List</h3>
+        </div>
+        <div class="big-container" v-show="!showCreate">
             <OpeningList />
         </div>
-        <div>
+        <div v-show="showCreate">
             <CreateOpening />
         </div>
     </div>
@@ -13,6 +17,11 @@ import OpeningList from '../components/OpeningList.vue';
 import CreateOpening from '../components/CreateOpening.vue';
 
 export default {
+    data() {
+        return {
+            showCreate: false
+        }
+    },
     components: {OpeningList, CreateOpening}
 }
 </script>
@@ -39,7 +48,18 @@ export default {
         border: 1px solid;
         border-radius: 10px;
         margin: 15px;
-        padding: 20px;
+        padding: 10px;
     }
-    
+    .menu {
+        display: flex;
+        flex-direction: row-reverse;
+    }
+    .clicker {
+        user-select: none;
+    }
+    .clicker:hover {
+        cursor: pointer;
+        opacity: 70%;
+        transition: opacity .2s;
+    }
 </style>

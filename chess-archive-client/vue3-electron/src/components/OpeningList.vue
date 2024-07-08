@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            <div v-if="$store.state.openings.length > 0" class="opening-container">
+            <div v-if="$store.state.openings.length > 0">
                 <div  v-for="opening in $store.state.openings" :key="opening.openingId">
                     <div class="head-row">
                         <h4>{{opening.openingName}}</h4>
@@ -14,7 +14,6 @@
                             <p class="item">page {{ opening.source.sourcePage }}, var. {{ opening.source.subnumber }}</p>
                         </div>
                     </div>
-                    
                     <div @click="opening.showPgn = !opening.showPgn" v-show="!opening.showPgn">
                         <p class="show-pgn-button">PGN</p>
                     </div>
@@ -24,11 +23,12 @@
                             <div class="spacer"></div>
                             <p class="item" @click="copy(opening.pgn)">Copy PGN</p>
                         </div>
-                        <div class="custom-spacer"></div>
-                        <p class="pgn-sub">{{ opening.notes }}</p>
-                        <div @click="opening.showPgn = !opening.showPgn" v-show="opening.showPgn">
-                        <p class="show-pgn-button">Hide</p>
-                    </div>
+                        <p class="notes">{{ opening.notes }}</p>
+                        <div @click="opening.showPgn = !opening.showPgn" v-show="opening.showPgn" class="widgets">
+                            <p class="show-pgn-button">Hide</p>
+                            <img src="/img/edit.png" class="edit" @click="editOpening(opening)"/>
+                            <img src="/img/trash.png" class="trash" @click="deleteOpening(opening)"/>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -37,14 +37,16 @@
 </template>
 <script>
 export default {
-    data() {
-        return {
-
-        }
-    },
     methods: {
         copy(pgn) {
             navigator.clipboard.writeText(pgn);
+        },
+        deleteOpening(opening) {
+            this.$store.commit("DELETE_OPENING", opening.openingId);
+        },
+        editOpening(opening) {
+            // todo do this!!
+            opening;
         }
     }
 }
@@ -92,9 +94,6 @@ export default {
         border: 1px solid;
         border-radius: 10px;
     }
-    .custom-spacer {
-        height: 15px;
-    }
     .show-pgn-button {
         padding: 5px;
         border: 1px solid;
@@ -112,5 +111,22 @@ export default {
     }
     .pgn-row {
         display: flex;
+    }
+    .notes {
+        text-align: left;
+        margin: 10px;
+    }
+    .widgets img {
+        height: 2em;
+        margin: 5px;
+        border: 1px solid;
+        padding: 5px;
+        border-radius: 10px;
+    }
+    .trash {        
+        background-color: #c92020;
+    }
+    .edit {
+        background-color: #c9aa20;
     }
 </style>

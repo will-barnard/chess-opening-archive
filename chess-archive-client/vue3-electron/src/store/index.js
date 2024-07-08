@@ -18,7 +18,7 @@ export function createStore() {
             state.openings = response.data;
           })
       },
-      ADD_OPENING(state, payload) {
+      CREATE_OPENING(state, payload) {
         OpeningService.createOpening(payload).then(
           (response) => {
             state.openings.push(response.data)
@@ -28,7 +28,7 @@ export function createStore() {
       UPDATE_OPENING(state, payload) {
         OpeningService.updateOpening(payload).then(
           (response) => {
-            state.openings.filter(
+            state.openings = state.openings.filter(
               (opening) => {
                 return opening.openingId != payload.openingId;
               }
@@ -36,10 +36,10 @@ export function createStore() {
           }
         )
       },
-      REMOVE_OPENING(state, payload) {
+      DELETE_OPENING(state, payload) {
         OpeningService.deleteOpening(payload).then(
           () => {
-            state.openings.filter(
+            state.openings = state.openings.filter(
               (opening) => {
                 return opening.openingId != payload;
               }
@@ -55,16 +55,12 @@ export function createStore() {
         )
       },
       CREATE_CATEGORY(state, payload) {
-        CategoryService.createCategory(payload).then(
-          (response) => {
-            state.categories.push(response.data);
-          }
-        )
+        state.categories.push(payload);
       },
       UPDATE_CATEGORY(state, payload) {
         CategoryService.updateCategory(payload).then(
           (response) => {
-            state.categories.filter(
+            state.categories = state.categories.filter(
               (category) => {
                 return category.categoryId != payload.categoryId;
               }
@@ -75,7 +71,7 @@ export function createStore() {
       DELETE_CATEGORY(state, payload) {
         CategoryService.deleteCategory(payload).then(
           () => {
-            state.categories.filter(
+            state.categories = state.categories.filter(
               (category) => {
                 return category.categoryId != payload;
               }
@@ -100,7 +96,7 @@ export function createStore() {
       UPDATE_SOURCE(state, payload) {
         SourceService.updateSource(payload).then(
           (response) => {
-            state.sources.filter(
+            state.sources = state.sources.filter(
               (source) => {
                 return source.sourceId != payload.sourceId;
               }
@@ -111,7 +107,7 @@ export function createStore() {
       DELETE_SOURCE(state, payload) {
         SourceService.deleteSource(payload).then(
           () => {
-            state.sources.filter(
+            state.sources = state.sources.filter(
               (source) => {
                 return source.sourceId != payload;
               }

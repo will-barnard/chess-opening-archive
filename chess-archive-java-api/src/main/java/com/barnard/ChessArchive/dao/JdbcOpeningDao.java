@@ -27,9 +27,9 @@ public class JdbcOpeningDao implements OpeningDao {
 
         String sql = "SELECT opening.*, category.*, source_material.source_name " +
                 "FROM opening " +
-                "JOIN opening_category ON opening.opening_id = opening_category.opening_id " +
-                "JOIN category ON opening_category.category_id = category.category_id " +
-                "JOIN source_material on opening.source_id = source_material.source_id " +
+                "LEFT JOIN opening_category ON opening.opening_id = opening_category.opening_id " +
+                "LEFT JOIN category ON opening_category.category_id = category.category_id " +
+                "LEFT JOIN source_material on opening.source_id = source_material.source_id " +
                 "WHERE opening.opening_id = ?;";
 
         try {
@@ -57,9 +57,9 @@ public class JdbcOpeningDao implements OpeningDao {
         List<Opening> openings = new ArrayList<>();
         String sql = "SELECT opening.*, category.*, source_material.source_name " +
                 "FROM opening " +
-                "JOIN opening_category ON opening.opening_id = opening_category.opening_id " +
-                "JOIN category ON opening_category.category_id = category.category_id " +
-                "JOIN source_material on opening.source_id = source_material.source_id;";
+                "LEFT JOIN opening_category ON opening.opening_id = opening_category.opening_id " +
+                "LEFT JOIN category ON opening_category.category_id = category.category_id " +
+                "LEFT JOIN source_material on opening.source_id = source_material.source_id;";
 
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
@@ -99,9 +99,9 @@ public class JdbcOpeningDao implements OpeningDao {
 
         String sql2 = "SELECT opening.*, category.*, source_material.source_name " +
                 "FROM opening " +
-                "JOIN opening_category on opening.category_id = opening_category.category_id " +
-                "JOIN category ON opening_category.category_id = category.category_id " +
-                "JOIN source_material ON opening.source_id = source_material.source_id" +
+                "LEFT JOIN opening_category on opening.category_id = opening_category.category_id " +
+                "LEFT JOIN category ON opening_category.category_id = category.category_id " +
+                "LEFT JOIN source_material ON opening.source_id = source_material.source_id" +
                 "WHERE opening_id = ";
         String joinStr = " OR opening_id = ";
         boolean firstLoop = true;
@@ -150,9 +150,9 @@ public class JdbcOpeningDao implements OpeningDao {
         search = "%" + search + "%";
         String sql = "SELECT opening.*, source_material.source_name " +
                 "FROM opening " +
-                "JOIN opening_category on opening.opening_id = opening_category.opening_id " +
-                "JOIN category ON opening_category.category_id = category.category_id " +
-                "JOIN source_material on opening.source_id = source_material.source_id " +
+                "LEFT JOIN opening_category on opening.opening_id = opening_category.opening_id " +
+                "LEFT JOIN category ON opening_category.category_id = category.category_id " +
+                "LEFT JOIN source_material on opening.source_id = source_material.source_id " +
                 "WHERE category.category_name LIKE ?;";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, search);
@@ -188,9 +188,9 @@ public class JdbcOpeningDao implements OpeningDao {
         pgn = "%" + pgn + "%";
         String sql = "SELECT opening.*, source_material.source_name " +
                 "FROM opening " +
-                "JOIN opening_category on opening.opening_id = opening_category.opening_id " +
-                "JOIN category ON opening_category.category_id = category.category_id " +
-                "JOIN source_material on opening.source_id = source_material.source_id " +
+                "LEFT JOIN opening_category on opening.opening_id = opening_category.opening_id " +
+                "LEFT JOIN category ON opening_category.category_id = category.category_id " +
+                "LEFT JOIN source_material on opening.source_id = source_material.source_id " +
                 "WHERE category.category_name LIKE ?;";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, pgn);
@@ -224,11 +224,21 @@ public class JdbcOpeningDao implements OpeningDao {
     public Opening createOpening(Opening opening) {
         Opening newOpening;
         String sql = "INSERT INTO opening (opening_name, source_id, source_page, source_subnumber, pgn, notes) " +
-                "VALUES (?, ?, ?, ?, ?) " +
+                "VALUES (?, ?, ?, ?, ?, ?) " +
                 "RETURNING opening_id;";
+        String sql2 = "";
+
         try {
             int openingId = jdbcTemplate.queryForObject(sql, int.class, opening.getOpeningName(), opening.getSource().getSourceId(),
                     opening.getSource().getSourcePage(), opening.getSource().getSubnumber(), opening.getPgn(), opening.getNotes());
+            if (opening.getCategories().size() > 0) {
+                for (OpeningCategory category : opening.getCategories()) {
+                    String temp = "INSERT INTO opening_category (opening_id, category_id) VALUES (";
+                    temp += openingId + ", " + category.getCategoryId() + ");";
+                    sql2 += temp;
+                }
+                jdbcTemplate.update(sql2);
+            }
             newOpening = getOpening(openingId);
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
@@ -243,13 +253,25 @@ public class JdbcOpeningDao implements OpeningDao {
         Opening updatedOpening = null;
         String sql = "UPDATE opening " +
                 "SET opening_name = ?, source_id = ?, source_page = ?, source_subnumber = ?, pgn = ?, notes = ? " +
+                "WHERE opening_id = ?; " +
+                "DELETE FROM opening_category " +
                 "WHERE opening_id = ?;";
+        String sql2 = "";
+        for (OpeningCategory category : opening.getCategories()) {
+            String temp = "INSERT INTO opening_category (opening_id, category_id) VALUES (";
+            temp += opening.getOpeningId() + ", " + category.getCategoryId() + ");";
+            sql2 += temp;
+        }
+
         try {
             int rowsAffected = jdbcTemplate.update(sql, opening.getOpeningName(), opening.getSource().getSourceId(),
                     opening.getSource().getSourcePage(), opening.getSource().getSubnumber(), opening.getPgn(), opening.getNotes(),
                     opening.getOpeningId());
             if (rowsAffected == 0) {
                 throw new DaoException();
+            }
+            if (opening.getCategories().size() > 0) {
+                jdbcTemplate.update(sql2);
             }
             updatedOpening = getOpening(opening.getOpeningId());
         } catch (CannotGetJdbcConnectionException e) {
@@ -262,10 +284,12 @@ public class JdbcOpeningDao implements OpeningDao {
 
     @Override
     public void deleteOpening(int openingId) {
-        String sql = "DELETE FROM opening " +
+        String sql = "DELETE FROM opening_category " +
+                "WHERE opening_id = ?; " +
+                "DELETE FROM opening " +
                 "WHERE opening_id = ?;";
         try {
-            int rowsAffected = jdbcTemplate.update(sql, openingId);
+            int rowsAffected = jdbcTemplate.update(sql, openingId, openingId);
             if (rowsAffected == 0) {
                 throw new DaoException();
             }
@@ -283,11 +307,13 @@ public class JdbcOpeningDao implements OpeningDao {
 
         opening.setOpeningId(rs.getInt("opening_id"));
         opening.setOpeningName(rs.getString("opening_name"));
-        int sourceId = rs.getInt("source_id");
-        source.setSourceId(sourceId);
-        source.setSourceName(rs.getString("source_name"));
-        source.setSourcePage(rs.getInt("source_page"));
-        source.setSubnumber(rs.getInt("source_subnumber"));
+        if (rs.getInt("source_id") != 0) {
+            int sourceId = rs.getInt("source_id");
+            source.setSourceId(sourceId);
+            source.setSourceName(rs.getString("source_name"));
+            source.setSourcePage(rs.getInt("source_page"));
+            source.setSubnumber(rs.getInt("source_subnumber"));
+        }
         opening.setPgn(rs.getString("pgn"));
         opening.setNotes(rs.getString("notes"));
         opening.setSource(source);
