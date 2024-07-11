@@ -1,6 +1,9 @@
 import axios from 'axios';
 
 export default {
+    getOpening(openingId) {
+        return axios.get('/opening/' + openingId)
+    },
     getAllOpenings() {
         return axios.get('/opening')
     },

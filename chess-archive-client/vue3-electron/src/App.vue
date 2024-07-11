@@ -3,8 +3,8 @@
     <div class="heading">
       <h1>Chess Opening Archive</h1>
       <div class="spacer"></div>
-      <p :class="openingStatus">Openings</p>
-      <p :class="categoryStatus">Categories</p>
+      <p :class="openingStatus" @click="$router.push({ name: 'home' })">Openings</p>
+      <p :class="categoryStatus" @click="$router.push({ name: 'category-search' })">Categories</p>
       <p :class="sourceStatus">Sources</p>
     </div>
     <RouterView />
@@ -20,7 +20,7 @@ export default {
   created() {
     this.$store.commit('LOAD_CATEGORIES');
     this.$store.commit('LOAD_SOURCES');
-    this.$store.commit('LOAD_OPENINGS');        
+    this.$store.commit('LOAD_OPENINGS');  
   },
   computed: {
     openingStatus() {
@@ -62,6 +62,7 @@ export default {
   justify-content: space-between;
 }
 .hp {
+  cursor: pointer;
   padding: 10px;
   margin-left: 5px;
   border: 1px solid;
@@ -77,4 +78,26 @@ export default {
 .spacer {
   flex-grow: 1;
 }
+:root {
+    color-scheme: light-only;
+    background-color: #3a3a3a;
+    color: #cecece;
+    border: #cecece;
+}
+textarea {
+    resize: none;
+}
+.item {
+        padding: 5px;
+        border: 1px solid;
+        border-radius: 10px;
+        margin: 5px;
+        user-select: none;
+        cursor: pointer;
+    }
+    .item:hover {
+        cursor: pointer;
+        opacity: 70%;
+        transition: opacity .2s;
+    }
 </style>

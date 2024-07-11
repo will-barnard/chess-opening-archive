@@ -43,7 +43,7 @@
             <div class="container">
                 <div class="subcontainer">
                     <div class="new-source" v-show="newSource.sourceId"> 
-                        <img src="/img/minus.png" @click="removeCategory(category)">
+                        <img src="/img/minus.png" @click="removeSource()">
                         <h3>{{newSource.sourceName}}</h3>
                     </div>
                     <div class="container-row">
@@ -62,7 +62,7 @@
                     </div>
                 </div>
             </div>
-            <button type="button" @click="submit">Submit</button>
+            <button type="button" @click.prevent="submit">Submit</button>
         </form>
     </div>
 </template>
@@ -86,7 +86,7 @@ export default {
             this.newOpening.categories = this.categories;
             this.newOpening.source = this.newSource;
             this.$store.commit("CREATE_OPENING", this.newOpening);
-            this.$router.push('/');
+            this.$emit('clicked', true);
         },
         updateSource() {
             if (!this.sourceSearch) {

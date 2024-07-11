@@ -266,7 +266,7 @@ public class JdbcOpeningDao implements OpeningDao {
         try {
             int rowsAffected = jdbcTemplate.update(sql, opening.getOpeningName(), opening.getSource().getSourceId(),
                     opening.getSource().getSourcePage(), opening.getSource().getSubnumber(), opening.getPgn(), opening.getNotes(),
-                    opening.getOpeningId());
+                    opening.getOpeningId(), opening.getOpeningId());
             if (rowsAffected == 0) {
                 throw new DaoException();
             }
@@ -289,10 +289,7 @@ public class JdbcOpeningDao implements OpeningDao {
                 "DELETE FROM opening " +
                 "WHERE opening_id = ?;";
         try {
-            int rowsAffected = jdbcTemplate.update(sql, openingId, openingId);
-            if (rowsAffected == 0) {
-                throw new DaoException();
-            }
+            jdbcTemplate.update(sql, openingId, openingId);
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
         } catch (DataIntegrityViolationException e) {

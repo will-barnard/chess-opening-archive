@@ -4,11 +4,11 @@
             <h3 @click="showCreate=true" class="hp clicker">Create Opening</h3>
             <h3 @click="showCreate=false" class="hp clicker">Opening List</h3>
         </div>
-        <div class="big-container" v-show="!showCreate">
+        <div v-if="!showCreate">
             <OpeningList />
         </div>
-        <div v-show="showCreate">
-            <CreateOpening />
+        <div v-if="showCreate">
+            <CreateOpening @clicked="reset"/>
         </div>
     </div>
 </template>
@@ -22,7 +22,14 @@ export default {
             showCreate: false
         }
     },
-    components: {OpeningList, CreateOpening}
+    components: {OpeningList, CreateOpening},
+    methods: {
+        reset(boolean) {
+            if (boolean) {
+                this.showCreate = false;
+            }
+        }
+    }
 }
 </script>
 <style>
