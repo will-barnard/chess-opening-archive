@@ -3,6 +3,7 @@ import { createRouter as createRouter, createWebHistory } from 'vue-router'
 import OpeningView from '../view/OpeningView.vue';
 import CategoryView from '../view/CategoryView.vue';
 import CategorySearchView from '../view/CategorySearchView.vue';
+import SourceView from '@/view/SourceView.vue';
 
 
 const routes = [
@@ -30,6 +31,11 @@ const routes = [
     path: '/category/search',
     name: 'category-search',
     component: CategorySearchView
+  },
+  {
+    path: '/source/:sourceId/:sourcePage',
+    name: 'source',
+    component: SourceView
   }
 ];
 

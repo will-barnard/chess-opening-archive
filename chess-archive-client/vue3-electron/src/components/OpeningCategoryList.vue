@@ -11,76 +11,9 @@
                         )
                     }
                 )" :key="opening.openingId">
-                    <div class="not-editing">
-                        <div class="head-row">
-                            <h4>{{opening.openingName}}</h4>
-                            <div class="item" v-for="category in opening.categories" :key="category.categoryId">
-                                <p @click="$router.push({ name: 'category-detail', params: {categoryId: category.categoryId } })">{{ category.categoryName }}</p>
-                            </div>
-                            <div class="spacer"></div>
-                            <div v-show="opening.source" class="detail-row">
-                                <p class="item">{{ opening.source.sourceName }}</p>
-                                <p class="item">page {{ opening.source.sourcePage }}, var. {{ opening.source.subnumber }}</p>
-                            </div>
-                        </div>
-                        <div @click="opening.showPgn = !opening.showPgn" v-show="!opening.showPgn">
-                            <p class="show-pgn-button">Show</p>
-                        </div>
-                        <div class="pgn" v-show="opening.showPgn">
-                            <div class=pgn-row>
-                                <p class="pgn-sub">{{ opening.pgn }}</p>
-                                <div class="spacer"></div>
-                                <p class="item" @click="copy(opening.pgn)">Copy PGN</p>
-                            </div>
-                            <p class="notes">{{ opening.notes }}</p>
-                            <div class="widgets">
-                                <img src="/img/edit.png" class="edit" @click="editOpening(opening)"/>
-                                <img src="/img/trash.png" class="trash" @click="deleteOpening(opening)"/>
-                            </div>
-                            <div @click="opening.showPgn = !opening.showPgn" v-show="opening.showPgn">
-                                <p class="show-pgn-button">Hide</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="editing" v-show="opening.editing">
-                        <label>Opening Name</label>
-                        <input v-model="opening.editOpening.openingName">
-                        <label>Source</label>
-                        <div class="new-source" v-show="opening.editOpening.source.sourceId"> 
-                            <img src="/img/minus.png" @click="removeSource(opening.editOpening)">
-                            <h3>{{opening.editOpening.source.sourceName}}</h3>
-                        </div>
-                        <input class="container-row" @keyup="updateSource(opening.editOpening)" v-model="sourceSearch">
-                        <div class="sources">
-                            <div v-for="source in sources" :key="source.sourceId" class="source">
-                                <img src="/img/plus.png" @click="addSource(source, opening.editOpening)">
-                                <p>{{source.sourceName}}</p>
-                            </div>
-                        </div>
-                        <input v-model="opening.editOpening.source.sourcePage">
-                        <input v-model="opening.editOpening.source.subnumber">
-                        <textarea v-model="opening.editOpening.pgn"></textarea>
-                        <textarea v-model="opening.editOpening.notes"></textarea>
-                        <div v-for="category in opening.editOpening.categories" :key="category.categoryId" class="new-category">
-                            <img src="/img/minus.png" @click="removeCategory(category, opening.editOpening)">
-                            {{ category.categoryName }}
-                        </div>
-                        <div class="subcontainer">
-                            <label>Categories</label>
-                            <div class="button-row">
-                                <input @keyup="updateCategory()" v-model="categorySearch">
-                                <button type="button" @click="newCategory(opening.editOpening)">Create&nbsp;New&nbsp;Category</button>
-                            </div>
-                        </div>
-                        <div class="categories">
-                            <div v-for="category in categories" :key="category.categoryId" class="category">
-                                <img src="/img/plus.png" @click="addCategory(category, opening.editOpening)">
-                                <p>{{category.categoryName}}</p>
-                            </div>
-                        </div>
-                        <button @click="updateOpening(opening.editOpening); opening.showPgn = false;">Submit</button>
-                        <button @click="cancelUpdateOpening(opening); opening.showPgn = false;">Cancel</button>
-                    </div>
+                    
+                    <OpeningCard :opening="opening" />
+
                 </div>
             </div>
         </div>
@@ -88,8 +21,10 @@
 </template>
 <script>
 import CategoryService from '@/service/CategoryService';
+import OpeningCard from './OpeningCard.vue';
 
 export default {
+    components: {OpeningCard},
     props: ['filterCategoryId'],
     data() {
         return {

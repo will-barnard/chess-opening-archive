@@ -9,7 +9,7 @@
                 <div class="spacer"></div>
                 <div v-show="opening.source" class="detail-row">
                     <p class="item">{{ opening.source.sourceName }}</p>
-                    <p class="item">page {{ opening.source.sourcePage }}, var. {{ opening.source.subnumber }}</p>
+                    <p class="item" @click="$router.push({ name: 'source', params: {sourceId: opening.source.sourceId, sourcePage: opening.source.sourcePage } } )">page {{ opening.source.sourcePage }}, var. {{ opening.source.subnumber }}</p>
                 </div>
             </div>
             <div @click="showPgn = !showPgn" v-show="!showPgn">
@@ -30,54 +30,61 @@
                     <p class="show-pgn-button">Hide</p>
                 </div>
             </div>
+            <div class="editing" v-if="isEditing">
+                <label>Opening Name</label>
+                <input v-model="editOpening.openingName">
+                <label>Source</label>
+                <input class="container-row" @keyup="updateSource(editOpening)" v-model="sourceSearch">
+                <div class="new-source" v-show="editOpening.source.sourceId"> 
+                    <img src="/img/minus.png" @click="removeSource(opening.editOpening)">
+                    <h4>{{editOpening.source.sourceName}}</h4>
+                </div>
+                <div class="sources">
+                    <div v-for="source in sources" :key="source.sourceId" class="source">
+                        <img src="/img/plus.png" @click="addSource(source, editOpening)">
+                        <p>{{source.sourceName}}</p>
+                    </div>
+                </div>
+                <div>
+                    <label>Page</label>
+                    <input v-model="editOpening.source.sourcePage">
+                </div>
+                <div>
+                    <label>Variation</label>
+                    <input v-model="editOpening.source.subnumber">
+                </div>
+                <div>
+                    <label>PGN</label>
+                    <textarea v-model="editOpening.pgn"></textarea>
+                </div>
+                <div>
+                    <label>Notes</label>
+                    <textarea v-model="editOpening.notes"></textarea>
+                </div>
+                <div v-for="category in editOpening.categories" :key="category.categoryId" class="new-category">
+                    <img src="/img/minus.png" @click="removeCategory(category, editOpening)">
+                    {{ category.categoryName }}
+                </div>
+                <div class="subcontainer">
+                    <label>Categories</label>
+                    <div class="button-row">
+                        <input @keyup="updateCategory()" v-model="categorySearch">
+                        <button type="button" @click="newCategory(editOpening)">Create&nbsp;New&nbsp;Category</button>
+                    </div>
+                </div>
+                <div class="categories">
+                    <div v-for="category in categories" :key="category.categoryId" class="category">
+                        <img src="/img/plus.png" @click="addCategory(category, editOpening)">
+                        <p>{{category.categoryName}}</p>
+                    </div>
+                </div>
+                <button @click="updateOpening(editOpening); showPgn = false;">Submit</button>
+                <button @click="cancelUpdateOpening(); showPgn = false;">Cancel</button>
+            </div>
         </div>
 
         
-        <div class="editing" v-if="isEditing">
-            <label>Opening Name</label>
-            <input v-model="editOpening.openingName">
-            <label>Source</label>
-            <input class="container-row" @keyup="updateSource(editOpening)" v-model="sourceSearch">
-            <div class="new-source" v-show="editOpening.source.sourceId"> 
-                <img src="/img/minus.png" @click="removeSource(opening.editOpening)">
-                <h4>{{editOpening.source.sourceName}}</h4>
-            </div>
-            <div class="sources">
-                <div v-for="source in sources" :key="source.sourceId" class="source">
-                    <img src="/img/plus.png" @click="addSource(source, editOpening)">
-                    <p>{{source.sourceName}}</p>
-                </div>
-            </div>
-            <div>
-                <label>Page</label>
-                <input v-model="editOpening.source.sourcePage">
-            </div>
-            <div>
-                <label>Variation</label>
-                <input v-model="editOpening.source.subnumber">
-            </div>
-            <textarea v-model="editOpening.pgn"></textarea>
-            <textarea v-model="editOpening.notes"></textarea>
-            <div v-for="category in editOpening.categories" :key="category.categoryId" class="new-category">
-                <img src="/img/minus.png" @click="removeCategory(category, editOpening)">
-                {{ category.categoryName }}
-            </div>
-            <div class="subcontainer">
-                <label>Categories</label>
-                <div class="button-row">
-                    <input @keyup="updateCategory()" v-model="categorySearch">
-                    <button type="button" @click="newCategory(editOpening)">Create&nbsp;New&nbsp;Category</button>
-                </div>
-            </div>
-            <div class="categories">
-                <div v-for="category in categories" :key="category.categoryId" class="category">
-                    <img src="/img/plus.png" @click="addCategory(category, editOpening)">
-                    <p>{{category.categoryName}}</p>
-                </div>
-            </div>
-            <button @click="updateOpening(editOpening); showPgn = false;">Submit</button>
-            <button @click="cancelUpdateOpening(); showPgn = false;">Cancel</button>
-        </div>
+        
     </div>
 </template>
 <script>
@@ -169,6 +176,10 @@ export default {
     }
 }
 </script>
-<style>
-    
+<style scoped>
+    .editing {
+        border: 1px solid;
+        border-radius: 10px;
+        padding: 5px;
+    }
 </style>
