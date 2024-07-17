@@ -5,6 +5,7 @@ node_modules
 dist/
 dist_electron/
 dist.zip
+.env
 
 # local env files
 .env.local
